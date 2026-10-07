@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^44.3.0",
+    "@symfony/stimulus-bridge": "^4.0.0",
+    "@symfony/stimulus-bundle": "^2.23.0",
+    "admin-lte": "^4.0.0-beta3",
+    "ckeditor4": "^4.25.1",
+    "jspdf": "^3.0.1"
+  },
+  "name": "lovoresume",
+  "version": "1.0.0",
+  "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
+  "main": "webpack.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "@symfony/webpack-encore": "^5.1.0",
+    "file-loader": "^6.2.0",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-notifier": "^1.15.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "encore dev",
+    "build": "encore production"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

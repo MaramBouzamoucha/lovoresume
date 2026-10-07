@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - RecruteurApp{% endblock %}
+
+{% block body %}
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#"><b>Recruteur</b>App</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Connectez-vous pour démarrer votre session</p>
+
+                {{ form_start(form) }}
+
+                <div class="input-group mb-3">
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group mb-3">
+                    {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+                    </div>
+                </div>
+
+                {{ form_end(form) }}
+
+                <p class="mb-0">
+                    <a  href="{{ path('admin_login') }}" class="text-center">connecter en tant que admin</a>
+                </p>
+            </div>
+        </div>
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+    </div>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            width: 360px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .login-logo a {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #4B0082;
+        }
+
+        .login-box-msg {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: #f1f1f1;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        .form-control {
+            border: none;
+            outline: none;
+            background: none;
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .input-group-text {
+            background: none;
+            border: none;
+            color: #555;
+        }
+
+        .btn-primary {
+            background-color: #d4af37;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #d4af37;
+        }
+
+        .text-center {
+            display: block;
+            margin-top: 15px;
+            color: #4B0082;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .text-center:hover {
+            text-decoration: underline;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+    </style>
+{% endblock %}

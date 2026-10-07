@@ -1,0 +1,107 @@
+{% extends 'admin.html.twig' %}
+
+{% block title %}Modifier le Template{% endblock %}
+
+{% block admin_content %}
+    <h1>Modifier le Template</h1>
+
+
+    <div class="row">
+        <div class="col-md-8">
+            {{ form_start(form)}}
+            {{ form_row(form.fileName) }}
+            {{ form_row(form.filePath) }}
+
+            {% if template.filePath %}
+                <p>Fichier actuel : <a href="{{ asset(template.filePath) }}" target="_blank">{{ template.filePath|split('/')|last }}</a></p>
+            {% endif %}
+
+            {{ form_row(form.htmlContent) }}
+
+            {% if form.vars.data.logo %}
+                <div>
+                    <label>Logo actuel :</label>
+                    <img src="{{ asset(form.vars.data.logo) }}" alt="Logo actuel" style="max-width: 200px;">
+                </div>
+            {% endif %}
+
+            {{ form_row(form.logo) }}
+
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            {{ form_errors(form) }}
+            {{ form_end(form) }}
+        </div>
+        <div class="col-md-4">
+            <div class="template-guide border p-3 bg-light">
+                <h3>Guide d'Utilisation pour la Fiche de Compétence et le CV</h3>
+
+                <p>Les balises suivantes seront remplacées automatiquement par les données correspondantes :</p>
+                <ul>
+                    <li><strong>{Prénom}</strong> - Prénom du candidat</li>
+                    <li><strong>{Poste}</strong> - Poste occupé ou recherché</li>
+                    <li><strong>{Nbre_année_expérience}</strong> - Nombre total d'années d'expérience</li>
+                    <li><strong>{Domaine}</strong> - Domaine d’expertise</li>
+                </ul>
+
+                <h5>Langues :</h5>
+                <ul>
+                    <li><strong>{langues_loop_start}</strong> ... <strong>{langues_loop_end}</strong> - Liste des langues parlées avec le niveau (par exemple : Français - Courant, Anglais - Intermédiaire)</li>
+                    <li><strong>{langue}</strong> - Langue</li>
+                    <li><strong>{niveau}</strong> - Niveau de maîtrise</li>
+                </ul>
+
+                <h5>Compétences techniques :</h5>
+                <ul>
+                    <li><strong>{modules_Maitrisés_loop_start}</strong> ... <strong>{modules_Maitrisés_loop_end}</strong> - Liste des modules techniques maîtrisés</li>
+                    <li><strong>{module_Maitrisé,description}</strong> - Nom du module et sa description</li>
+                    <li><strong>{compétences_Techniques_loop_start}</strong> ... <strong>{compétences_Techniques_loop_end}</strong> - Liste des compétences techniques</li>
+                    <li><strong>{compétence_Technique}</strong> - Compétence spécifique</li>
+                </ul>
+
+                <h5>Compétences fonctionnelles :</h5>
+                <ul>
+                    <li><strong>{compétences_Fonctionnelles_loop_start}</strong> ... <strong>{compétences_Fonctionnelles_loop_end}</strong> - Liste des compétences fonctionnelles</li>
+                    <li><strong>{compétence_Fonctionnelle}</strong> - Compétence spécifique</li>
+                </ul>
+
+                <h5>Expérience professionnelle :</h5>
+                <ul>
+                    <li><strong>{Entreprises_loop_start}</strong> ... <strong>{Entreprises_loop_end}</strong> - Liste des entreprises où le candidat a travaillé</li>
+                    <li><strong>{Entreprise}</strong> - Nom de l’entreprise</li>
+                    <li><strong>{période}</strong> - Période d’emploi</li>
+                    <li><strong>{Rôle}</strong> - Rôle ou poste occupé</li>
+                    <li><strong>{projets_loop_start}</strong> ... <strong>{projets_loop_end}</strong> - Liste des projets réalisés</li>
+                    <li><strong>{projet,description}</strong> - Nom du projet et sa description</li>
+                </ul>
+
+                <h5>Formations académiques et professionnelles :</h5>
+                <ul>
+                    <li><strong>{Formations_académiques_loop_start}</strong> ... <strong>{Formations_académiques_loop_end}</strong> - Liste des formations académiques</li>
+                    <li><strong>{année,diplôme,établissement}</strong> - Année, diplôme obtenu, et nom de l’établissement</li>
+                    <li><strong>{Formations_loop_start}</strong> ... <strong>{Formations_loop_end}</strong> - Liste des formations ou certifications professionnelles</li>
+                    <li><strong>{année,formation}</strong> - Année et nom de la formation</li>
+                </ul>
+
+                <h5>Soft skills :</h5>
+                <ul>
+                    <li><strong>{compétences_Comportementales_loop_start}</strong> ... <strong>{compétences_Comportementales_loop_end}</strong> - Liste des compétences comportementales</li>
+                    <li><strong>{compétence_Comportementale}</strong> - Compétence spécifique</li>
+                </ul>
+
+                <h5>Domaines d’intervention :</h5>
+                <ul>
+                    <li><strong>{domaines_interventions_loop_start}</strong> ... <strong>{domaines_interventions_end}</strong> - Liste des domaines d’intervention</li>
+                    <li><strong>{domaine_intervention}</strong> - Domaine d’intervention spécifique</li>
+                </ul>
+
+                <h5>Environnement technique :</h5>
+                <ul>
+                    <li><strong>{Technologies_loop_start}</strong> ... <strong>{Technologies_loop_end}</strong> - Liste des technologies utilisées</li>
+                    <li><strong>{technologie}</strong> - Nom de la technologie</li>
+                </ul>
+
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

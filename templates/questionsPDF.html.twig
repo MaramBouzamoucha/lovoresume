@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire d'entretien</title>
+    <style>
+        body { font-family: Arial; margin: 2cm; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #d4af37; }
+        .form-field { margin-bottom: 1.5cm; }
+        .question { font-weight: bold; margin-bottom: 0.5cm; }
+        textarea {
+            width: 100%;
+            height: 4cm;
+            border: 1px solid #d4af37;
+            padding: 0.5cm;
+            font-family: Arial;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<h1>Formulaire d'entretien</h1>
+
+<p><strong>Poste:</strong> {{ descriptionPoste }}</p>
+<p><strong>Durée estimée:</strong> {{ duration }}</p>
+
+{% for question in questions %}
+    <div class="form-field">
+        <div class="question">{{ loop.index }}. {{ question }}</div>
+        <textarea name="reponse_{{ loop.index }}"></textarea>
+    </div>
+{% endfor %}
+</body>
+</html>

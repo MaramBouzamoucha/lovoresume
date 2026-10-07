@@ -1,0 +1,18 @@
+{% if responses is string %}
+    <p><strong>Erreur:</strong> {{ responses }}</p>
+{% elseif responses is iterable %}
+    {% for response in responses %}
+        <div>
+            <p><strong>ID de la réponse:</strong> {{ response.responseId }}</p>
+            <p><strong>Date de création:</strong> {{ response.createTime }}</p>
+            <h3>Réponses:</h3>
+            <ul>
+                {% for questionId, answers in response.answers %}
+                    <li><strong>{{ questionId }}:</strong> {{ answers }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+{% else %}
+    <p><strong>Erreur inconnue:</strong> La structure des données retournées n'est pas correcte.</p>
+{% endif %}

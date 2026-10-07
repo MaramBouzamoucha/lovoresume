@@ -1,0 +1,12 @@
+# Read the documentation: https://symfony.com/doc/current/bundles/FOSCKEditorBundle/index.html
+# config/packages/fos_ckeditor.yaml
+# config/packages/fos_ckeditor.yaml
+# config/packages/fos_ckeditor.yaml
+# config/packages/fos_ckeditor.yaml
+fos_ck_editor:
+    default_config: default
+
+    configs:
+        default:
+            toolbar: standard
+            language: fr

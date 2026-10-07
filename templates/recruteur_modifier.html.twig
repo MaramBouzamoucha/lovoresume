@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le recruteur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Variables */
+        :root {
+            --primary-color: #e6c158;
+            --secondary-color: #343a40;
+            --border-color: #ddd;
+            --error-color: #dc3545;
+        }
+
+        /* Override Bootstrap background colors */
+        body {
+            background-color: #ffffff !important;
+        }
+
+        .container {
+            background-color: #ffffff !important;
+        }
+
+        /* Form styling */
+        .recruiter-form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.75rem;
+            background-color: #ffffff;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(230, 193, 88, 0.25);
+        }
+
+        /* Custom button styling */
+        .btn-custom-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom-primary:hover {
+            background-color: #d1af4e;
+            border-color: #d1af4e;
+        }
+
+        .btn-custom-primary:focus {
+            box-shadow: 0 0 0 0.2rem rgba(230, 193, 88, 0.5);
+        }
+
+        /* Secondary button styling */
+        .btn-custom-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        /* Animation for form submission */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-custom-primary:active {
+            animation: pulse 0.3s;
+        }
+
+        /* Error styling */
+        .invalid-feedback {
+            color: var(--error-color);
+            display: block;
+            margin-top: 0.25rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="recruiter-form-container">
+            <h2 class="text-center form-title">Modifier un Recruteur</h2>
+
+            {{ form_start(form, {'attr': {'id': 'edit-recruiter-form'}}) }}
+
+            <div class="form-group">
+                {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.nom, { 'attr': {'class': 'form-control'} }) }}
+                {{ form_errors(form.nom, {'attr': {'class': 'invalid-feedback'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.email, { 'attr': {'class': 'form-control'} }) }}
+                {{ form_errors(form.email, {'attr': {'class': 'invalid-feedback'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.ancien_password, 'Ancien Mot de Passe', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.ancien_password, { 'attr': {'class': 'form-control', 'type': 'password'} }) }}
+                {{ form_errors(form.ancien_password, {'attr': {'class': 'invalid-feedback'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.nouveau_password, 'Nouveau Mot de Passe', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.nouveau_password, { 'attr': {'class': 'form-control', 'type': 'password'} }) }}
+                {{ form_errors(form.nouveau_password, {'attr': {'class': 'invalid-feedback'}}) }}
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-custom-primary w-50 me-2">Modifier</button>
+                <a href="{{ path('recruteur_liste') }}" class="btn btn-custom-secondary w-50">Annuler</a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

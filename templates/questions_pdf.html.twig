@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions pour l'entretien</title>
+    <style>
+        :root {
+            --primary-color: #d4af37;
+            --primary-hover: #c59e2e;
+            --text-color: #2c3e50;
+            --border-light: #f0f0f0;
+            --white: #ffffff;
+        }
+
+        body {
+            background: var(--white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #2c3e50;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .logo-container img {
+            max-height: 80px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #d4af37;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 4px;
+            background-color: #d4af37;
+            border-radius: 2px;
+        }
+
+        .theme-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #d4af37;
+            font-size: 1.2rem;
+        }
+
+        .question-list {
+            counter-reset: q-counter;
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-list li {
+            counter-increment: q-counter;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .question-list li:hover {
+            background-color: rgba(212, 175, 55, 0.05);
+            transform: translateX(5px);
+        }
+
+        .question-list li:last-child {
+            border-bottom: none;
+        }
+
+        .question-list li::before {
+            content: counter(q-counter);
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            width: 28px;
+            height: 28px;
+            background: #d4af37;
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            line-height: 28px;
+        }
+
+        .question-list li:hover::before {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+        }
+
+        .question-content {
+            margin-left: 2.5rem;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .question-list li {
+                padding: 0.75rem;
+            }
+
+            .question-content {
+                margin-left: 2rem;
+            }
+        }
+        @media (max-width: 480px) {
+
+
+            .logo-container img {
+                max-height: 60px;
+            }
+
+            .question-list li::before {
+                width: 24px;
+                height: 24px;
+                font-size: 0.8rem;
+            }
+
+            .question-content {
+                margin-left: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="logo-container">
+    <img src="https://lovotech.fr/assets/images/LOGO.png" alt="Logo de Lovotech" class="logo">
+</div>
+<div class="generated-questions">
+    <h1>Guide d'entretien</h1>
+    <h5>Poste: {{descriptionPoste}}</h5>
+    <h5 >Temps d'entretien: {{duration}}</h5>
+    {% set lines = questions|split('\n') %}
+    {% set current_theme = '' %}
+    {% set current_questions = [] %}
+    {% set all_themes = [] %}
+    {% for line in lines %}
+        {% set line_content = line|trim %}
+        {% if line_content starts with '**Thème' or line_content starts with '## ' %}
+            {% set theme_text = line_content|replace({'**': '', '##': ''})|trim %}
+            {% if current_theme != '' and current_questions|length > 0 %}
+                {% set theme_data = {'theme': current_theme, 'questions': current_questions} %}
+                {% set all_themes = all_themes|merge([theme_data]) %}
+                {% set current_questions = [] %}
+            {% endif %}
+            {% set current_theme = theme_text %}
+        {% elseif line_content matches '/^\\d+\\.\\s.+/' %}
+            {% set question_text = line_content|replace({'/^\\d+$/': ''})|trim %}
+            {% set current_questions = current_questions|merge([question_text]) %}
+        {% elseif line_content matches '/^\\d+$/' %}
+        {% elseif line_content != '' and current_theme != '' %}
+            {% set current_questions = current_questions|merge([line_content]) %}
+        {% endif %}
+    {% endfor %}
+    {% if current_theme != '' and current_questions|length > 0 %}
+        {% set theme_data = {'theme': current_theme, 'questions': current_questions} %}
+        {% set all_themes = all_themes|merge([theme_data]) %}
+    {% endif %}
+    {% for theme_data in all_themes %}
+        <div class="theme-section">
+            <h2 class="theme-title">{{ theme_data.theme }}</h2>
+            <ol class="question-list">
+                {% for question in theme_data.questions %}
+                    <li>
+                        <span class="question-content">{{ question }}</span>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+parameters:
+    cv_directory: '%kernel.project_dir%/public/uploads/cvs'
+    app.cv_generer_directory: '%kernel.project_dir%/public/uploads/cvGenere'
+    google_forms_redirect_uri: 'http://localhost:8000/google/auth/callback'
+
+    google.redirect_uri: 'http://localhost:8000/google/auth/callback'
+    tokenPath: '%kernel.project_dir%/config/formulaire.json'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+    App\Service\GoogleFormsService:
+        arguments:
+            $tokenPath: '%tokenPath%'
+
+    App\Controller\CvController:
+        arguments:
+            $cvGenererDirectory: '%app.cv_generer_directory%'
+        tags: ['controller.service_arguments']

@@ -1,0 +1,1189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des CV - LovoTech{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+{% endblock %}
+
+{% block body %}
+    <div class="lovotech-container">
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">
+                    <i class="fas fa-file-alt"></i>
+                    Liste des CV
+                </h1>
+                <p class="page-description">Gérez et générez des CV et fiches de compétences</p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ path('cv_upload') }}" class="btn-lovotech">
+                    <i class="fas fa-upload"></i> Uploader un CV
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="card-header">
+                <div class="card-title">CV disponibles</div>
+                <div class="card-tools">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Rechercher...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="lovotech-table-container">
+                <table class="lovotech-table" id="cvTable">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>CV Original</th>
+                        <th>CV Générique</th>
+                        <th>Fiche de Compétence</th>
+                        <th>Évaluation</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cv in cvs %}
+                        <tr>
+                            <td>{{ cv.id }}</td>
+                            <td>
+                                {% if cv.Cv %}
+                                    <a href="{{ asset('uploads/cvs/' ~ cv.Cv) }}" class="document-link" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> Voir CV
+                                    </a>
+                                {% else %}
+                                    <span class="status-badge status-unavailable">Non disponible</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if cv.cvGenerique %}
+                                    <a href="{{ asset('uploads/cvGenere/' ~ cv.cvGenerique) }}" class="document-link" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> Télécharger
+                                    </a>
+                                {% else %}
+                                    <span class="status-badge status-unavailable">Non disponible</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if cv.ficheCompetence %}
+                                    <a href="{{ asset('uploads/fiches/' ~ cv.ficheCompetence) }}" class="document-link" target="_blank">
+                                        <i class="fas fa-file-alt"></i> Voir Fiche
+                                    </a>
+                                {% else %}
+                                    <span class="status-badge status-unavailable">Non disponible</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-generate" onclick="openModal('cvModal', {{ cv.id }})">
+                                        <i class="fas fa-file-export"></i>
+                                        <span>CV</span>
+                                    </button>
+                                    <button class="btn-action btn-generate" onclick="openModal('ficheModal', {{ cv.id }})">
+                                        <i class="fas fa-list-check"></i>
+                                        <span>Fiche</span>
+                                    </button>
+                                    <button class="btn-action btn-evaluate" onclick="openModal('evaluationModal', {{ cv.id }})">
+                                        <i class="fas fa-clipboard-check"></i>
+                                        <span>Évaluer</span>
+                                    </button>
+
+                                    <button class="btn-lovotech" onclick="openModal('generateQuestionsModal', {{ cv.id }})">
+                                        🤖 Générer des questions
+                                    </button>
+
+                                    <form action="{{ path('cv_delete', {'id': cv.id}) }}" method="post" class="delete-form">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cv.id) }}">
+                                        <button type="submit" class="btn-action btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce CV?')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-table">
+                                <div class="empty-state">
+                                    <i class="fas fa-folder-open"></i>
+                                    <p>Aucun CV disponible</p>
+                                    <a href="{{ path('cv_upload') }}" class="btn-lovotech btn-sm">
+                                        <i class="fas fa-upload"></i> Uploader un CV
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="lovotech-modal" id="evaluationModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h3 class="modal-title">Évaluer un formulaire PDF</h3>
+                    <button type="button" class="close-btn" onclick="closeModal('evaluationModal')" aria-label="Fermer">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <!-- Corps de la modale -->
+                <div class="modal-body">
+                    <p class="modal-description">
+                        Téléchargez le formulaire PDF rempli par le candidat pour l'évaluer.
+                    </p>
+
+                    <div class="alert-box">
+                        <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        <p>Vous pourrez attribuer des scores et ajouter des commentaires après avoir téléchargé le formulaire.</p>
+                    </div>
+
+                    <div class="upload-zone" id="uploadZone">
+                        <i class="fas fa-upload" aria-hidden="true"></i>
+                        <h4>Déposez votre fichier PDF ici</h4>
+                        <p>ou</p>
+
+                        <!-- Bouton de chargement -->
+                        <label for="pdfUpload" class="btn-lovotech btn-sm">Parcourir les fichiers</label>
+                        <input
+                                type="file"
+                                id="pdfUpload"
+                                name="entretien_pdf"
+                                accept="application/pdf"
+                                style="display: none;"
+                        >
+
+                        <p class="upload-hint">PDF uniquement (max 10MB)</p>
+                    </div>
+                </div>
+
+                <!-- Pied de la modale -->
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('evaluationModal')">Annuler</button>
+
+                    <button type="button" class="btn-lovotech" onclick="evaluerReponses()">
+                        <i class="fas fa-cog"></i> Évaluer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="lovotech-modal" id="cvModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Générer un CV</h3>
+                    <button type="button" class="close-btn" onclick="closeModal('cvModal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">Sélectionnez un modèle de CV pour générer un document personnalisé.</p>
+
+                    <form id="cvForm" class="template-form">
+                        <div class="template-grid">
+                            {% for template in cvTemplates %}
+                                <label class="template-card">
+                                    <input type="radio" name="cvTemplate" value="{{ template.filename }}" class="template-radio">
+                                    <div class="template-card-content">
+                                        <div class="template-icon">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <div class="template-info">
+                                            <span class="template-name">{{ template.filename }}</span>
+                                        </div>
+                                        <div class="check-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('cvModal')">Annuler</button>
+                    <button type="button" class="btn-lovotech" onclick="generateCV()">
+                        <i class="fas fa-cog"></i> Générer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lovotech-modal" id="ficheModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Générer une fiche de compétences</h3>
+                    <button type="button" class="close-btn" onclick="closeModal('ficheModal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">Sélectionnez un modèle de fiche pour mettre en valeur les compétences du candidat.</p>
+
+                    <form id="ficheForm" class="template-form">
+                        <div class="template-grid">
+                            {% for template in ficheCompetencesTemplates %}
+                                <label class="template-card">
+                                    <input type="radio" name="ficheTemplate" value="{{ template.filename }}" class="template-radio">
+                                    <div class="template-card-content">
+                                        <div class="template-icon">
+                                            <i class="fas fa-list-check"></i>
+                                        </div>
+                                        <div class="template-info">
+                                            <span class="template-name">{{ template.filename }}</span>
+                                        </div>
+                                        <div class="check-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('ficheModal')">Annuler</button>
+                    <button type="button" class="btn-lovotech" onclick="generateFiche()">
+                        <i class="fas fa-cog"></i> Générer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="generateQuestionsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h3 class="modal-title">Générer des Questions</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="jobDescription" class="form-label">Description du poste</label>
+                        <textarea class="form-control" id="jobDescription" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">Durée de l’entretien (en minutes)</label>
+                        <input type="number" class="form-control" id="duration" required min="1" max="180">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="generateQuestions()" style="background-color:#b89328 ">
+                        <i class="fas fa-cog"></i> Générer
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        selectedCvId = null;
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+            document.body.classList.remove('modal-open');
+        }
+        window.onclick = function(event) {
+            if (event.target.classList.contains('lovotech-modal')) {
+                event.target.classList.remove('show');
+                document.body.classList.remove('modal-open');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const table = document.getElementById('cvTable');
+                    const rows = table.getElementsByTagName('tr');
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const cells = row.getElementsByTagName('td');
+                        let found = false;
+
+                        for (let j = 0; j < cells.length; j++) {
+                            const cellText = cells[j].textContent.toLowerCase();
+                            if (cellText.indexOf(searchTerm) > -1) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (found) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+            }
+        });
+        function generateCV() {
+            const selectedTemplate = document.querySelector('#cvForm input[name="cvTemplate"]:checked');
+            if (!selectedCvId) {
+                showNotification('Erreur : ID du CV non défini !', 'error');
+                return;
+            }
+            if (selectedTemplate) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/cv/generate/${selectedCvId}`;
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token('generate') }}';
+                form.appendChild(csrfToken);
+                const templateInput = document.createElement('input');
+                templateInput.type = 'hidden';
+                templateInput.name = 'template';
+                templateInput.value = selectedTemplate.value;
+                form.appendChild(templateInput);
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                showNotification('Veuillez sélectionner un modèle de CV.', 'warning');
+            }
+        }
+
+        function generateFiche() {
+            const selectedTemplate = document.querySelector('input[name="ficheTemplate"]:checked');
+            if (!selectedCvId) {
+                showNotification('Erreur : ID du CV non défini !', 'error');
+                return;
+            }
+            if (selectedTemplate) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/skillsheet/generate/${selectedCvId}`;
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token('generate') }}';
+                form.appendChild(csrfToken);
+                const templateInput = document.createElement('input');
+                templateInput.type = 'hidden';
+                templateInput.name = 'template';
+                templateInput.value = selectedTemplate.value;
+                form.appendChild(templateInput);
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                showNotification('Veuillez sélectionner un modèle de fiche.', 'warning');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+
+            const icon = document.createElement('i');
+            icon.className = type === 'error' ? 'fas fa-exclamation-circle' :
+                type === 'warning' ? 'fas fa-exclamation-triangle' :
+                    'fas fa-info-circle';
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = message;
+
+            notification.appendChild(icon);
+            notification.appendChild(textSpan);
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+
+        }
+
+        function openModal(modalId, cvId) {
+            selectedCvId = cvId;
+
+            if (modalId === 'generateQuestionsModal') {
+                console.log("Modal générer questions appelé"); // debug
+                const bsModal = new bootstrap.Modal(document.getElementById(modalId));
+                bsModal.show();
+            } else {
+                document.getElementById(modalId).classList.add('show');
+                document.body.classList.add('modal-open');
+            }
+        }
+
+
+        function generateQuestions() {
+            const jobDescription = document.getElementById('jobDescription').value;
+            const duration = document.getElementById('duration').value;
+            const cvId = window.selectedCvId;
+
+            if (!jobDescription || !duration) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('descriptionPoste', jobDescription);
+            formData.append('duration', duration);
+
+            fetch(`/questions/generate/${cvId}`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || 'Une erreur est survenue');
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la génération :", error);
+                    alert(error.message || "Erreur lors de la génération des questions.");
+                });
+        }
+        async function evaluerReponses() {
+            const pdfInput = document.getElementById('pdfUpload');
+
+            try {
+
+                if (!pdfInput) {
+                    throw new Error("Éléments requis introuvables dans le DOM");
+                }
+                const file = pdfInput.files[0];
+                if (!file) throw new Error("Veuillez sélectionner un fichier PDF");
+                if (file.size > 10 * 1024 * 1024) throw new Error("Le fichier ne doit pas dépasser 10MB");
+                if (file.type !== 'application/pdf') throw new Error("Seuls les fichiers PDF sont acceptés");
+                const formData = new FormData();
+                formData.append('formulaire_entretien', file);
+                if (!window.selectedCvId) {
+                    throw new Error("Identifiant du CV manquant");
+                }
+                const response = await fetch(`/evaluation/${window.selectedCvId}`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.error || "Erreur serveur");
+                }
+                window.location.href = `/result/${window.selectedCvId}`;
+            } catch (error) {
+                console.error("Erreur dans le processus d'évaluation:", error);
+                alert(`Une erreur est survenue: ${error.message}`);
+            }
+
+        }
+
+    </script>
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-light: #e6c158;
+            --primary-dark: #b89328;
+            --secondary: #4a4a4a;
+            --secondary-light: #666666;
+            --secondary-dark: #333333;
+            --accent: #f5ebc8;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--secondary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .lovotech-container {
+            width: 95%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2.5rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 1.75rem;
+        }
+
+        .page-description {
+            color: var(--gray-600);
+            margin: 0.75rem 0 0 0;
+            font-size: 1.125rem;
+        }
+
+        .btn-lovotech {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            color: var(--secondary-dark);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.875rem 1.75rem;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-lovotech:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-lovotech.btn-sm {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9375rem;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.875rem 1.75rem;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-second {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            color: var(--gray-700);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.875rem 1.75rem;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+
+        .btn-secondary:hover {
+            background-color: var(--gray-300);
+        }
+
+
+        .content-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-title {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .card-tools {
+            display: flex;
+            gap: 1rem;
+        }
+
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+
+        .search-box input {
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            width: 300px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+
+        .lovotech-table-container {
+            overflow-x: auto;
+            padding: 0 1rem;
+        }
+
+        .lovotech-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.0625rem;
+        }
+
+        .lovotech-table th {
+            background-color: var(--gray-100);
+            color: var(--secondary);
+            font-weight: 600;
+            text-align: left;
+            padding: 1.25rem 1.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .lovotech-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-700);
+            vertical-align: middle;
+        }
+
+        .lovotech-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .lovotech-table tr:hover td {
+            background-color: grey;
+        }
+
+        .document-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.0625rem;
+        }
+
+        .document-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-unavailable {
+            background-color: var(--gray-200);
+            color: var(--gray-600);
+        }
+
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: white;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            padding: 0.625rem 1rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            background-color: var(--gray-100);
+        }
+
+        .btn-generate {
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-generate:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-delete {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .delete-form {
+            margin: 0;
+        }
+
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-400);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            font-size: 1.125rem;
+        }
+
+
+        .lovotech-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lovotech-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .modal-dialog {
+            width: 100%;
+            max-width: 700px;
+            margin: 1.75rem auto;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            outline: 0;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .close-btn {
+            background: grey;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+
+        .close-btn:hover {
+            color: var(--secondary);
+        }
+
+        .modal-body {
+            position: relative;
+            flex: 1 1 auto;
+            padding: 2rem;
+        }
+
+        .modal-description {
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+            font-size: 1.0625rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--gray-200);
+            gap: 1rem;
+        }
+
+
+        .template-form {
+            margin: 0;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .template-card {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .template-radio {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .template-card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1.25rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .template-radio:checked + .template-card-content {
+            border-color: var(--primary);
+            background-color: var(--accent);
+        }
+
+        .template-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            transition: var(--transition);
+        }
+
+        .template-radio:checked + .template-card-content .template-icon {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .template-info {
+            flex: 1;
+        }
+
+        .template-name {
+            font-weight: 500;
+            font-size: 1.0625rem;
+            color: var(--secondary);
+            display: block;
+            margin-bottom: 0.375rem;
+        }
+
+        .check-icon {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .template-radio:checked + .template-card-content .check-icon {
+            opacity: 1;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1.25rem 1.75rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1100;
+            transform: translateX(calc(100% + 2rem));
+            transition: transform 0.3s ease;
+            max-width: 450px;
+            font-size: 1.0625rem;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            font-size: 1.5rem;
+        }
+
+        .notification-info i {
+            color: var(--info);
+        }
+
+        .notification-success i {
+            color: var(--success);
+        }
+
+        .notification-warning i {
+            color: var(--warning);
+        }
+
+        .notification-error i {
+            color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .lovotech-container {
+                width: 100%;
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .search-box input {
+                width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .lovotech-container {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .lovotech-table th,
+            .lovotech-table td {
+                padding: 1rem 1.25rem;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+
+            .template-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .modal-dialog {
+                margin: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .card-tools {
+                width: 100%;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .template-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .btn-action span {
+                display: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+
+        .text-primary {
+            color: var(--primary) !important;
+        }
+
+        .text-secondary {
+            color: var(--secondary) !important;
+        }
+
+        .bg-primary {
+            background-color: var(--primary) !important;
+        }
+
+        .bg-secondary {
+            background-color: var(--secondary) !important;
+        }
+    </style>
+{% endblock %}

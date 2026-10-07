@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Évaluation du candidat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --lovotech-yellow: #c89f05;
+            --lovotech-yellow-light: #f0e3b3;
+            --lovotech-yellow-dark: #a58204;
+            --lovotech-gray: #333333;
+            --lovotech-gray-light: #f5f5f5;
+            --bg-light: #ffffff;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--lovotech-gray);
+            line-height: 1.6;
+        }
+
+        .evaluation-wrapper {
+            width: 80%;
+            margin: 2rem auto;
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-left: 6px solid var(--lovotech-yellow);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--lovotech-gray);
+        }
+
+        .tech {
+            color: var(--lovotech-yellow);
+        }
+
+
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: var(--lovotech-yellow);
+            border-radius: 2px;
+        }
+
+
+
+        .info p {
+            font-size: 1rem;
+            margin: 0.3rem 0;
+        }
+
+        .card {
+
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #eaeaea;
+        }
+
+        .card p {
+            font-size: 1.1rem;
+        }
+
+
+        @media print {
+            body {
+                background-color: white;
+            }
+            .evaluation-wrapper {
+                box-shadow: none;
+                border-left: none;
+                width: 100%;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="evaluation-wrapper">
+    <div class="logo-container">
+        <div class="logo-text">Lovo<span class="tech">Tech</span></div>
+    </div>
+    <div class="card">
+        {% set evaluation_formatted = evaluation
+            | replace({
+            '**Points forts:**': '<span class="section-title">Points forts :</span>',
+            '**Points faibles:**': '<span class="section-title">Points faibles :</span>',
+            '**Adéquation avec le poste:**': '<span class="section-title">Adéquation avec le poste :</span>',
+            '**Recommandation:**': '<span class="section-title">Recommandation :</span>',
+            '**Note sur 20:**': '<span class="section-title">Note sur 20 :</span>',
+        })
+        %}
+        {{ evaluation_formatted|raw }}
+    </div>
+
+</div>
+
+</body>
+</html>

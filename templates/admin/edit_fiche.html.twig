@@ -1,0 +1,89 @@
+{% extends 'admin.html.twig' %}
+
+{% block title %}Modifier le Template{% endblock %}
+
+{% block admin_content %}
+    <h1>Modifier le Template</h1>
+
+    <div class="row">
+
+        <div class="col-md-8">
+            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            {{ form_row(form.fileName) }}
+            {{ form_row(form.filePath) }}
+
+            {% if fiche.filePath %}
+                <p>Fichier actuel : <a href="{{ asset(fiche.filePath) }}" target="_blank">{{ fiche.filePath|split('/')|last }}</a></p>
+            {% endif %}
+
+            {{ form_row(form.htmlContent) }}
+
+            {# Afficher le logo actuel #}
+            {% if form.vars.data.logo %}
+                <div>
+                    <label>Logo actuel :</label>
+                    <img src="{{ asset(form.vars.data.logo) }}" alt="Logo actuel" style="max-width: 200px;">
+                </div>
+            {% endif %}
+
+            {{ form_row(form.logo) }}
+
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            {{ form_errors(form) }}
+            {{ form_end(form) }}
+        </div>
+        <div class="col-md-4">
+            <div class="template-guide border p-3 bg-light">
+                <h3>Guide d'Utilisation pour la Fiche de Compétence</h3>
+
+                <p>Les balises suivantes seront remplacées automatiquement par les données correspondantes :</p>
+                <ul>
+                    <li><strong>{Prénom}</strong> - Prénom du candidat</li>
+                    <li><strong>{poste}</strong> - Poste actuel</li>
+                    <li><strong>{Nb_années_expériences}</strong> - Nombre d'années d'expérience</li>
+                    <li><strong>{domaine}</strong> - Domaine d’expertise</li>
+                </ul>
+
+                <h5>Langues :</h5>
+                <ul>
+                    <li><strong>{langues_loop_start}</strong> ... <strong>{langues_loop_end}</strong> - Liste des langues parlées</li>
+                    <li><strong>{langue}</strong> - Langue</li>
+                </ul>
+
+                <h5>Compétences techniques :</h5>
+                <ul>
+                    <li><strong>{modules_Maitrisés_loop_start}</strong> ... <strong>{modules_Maitrisés_loop_end}</strong> - Liste des modules maîtrisés</li>
+                    <li><strong>{module_Maitrisé,description}</strong> - Nom du module et sa description</li>
+                    <li><strong>{compétences_Développement_loop_start}</strong> ... <strong>{compétences_Développement_loop_end}</strong> - Liste des compétences en développement</li>
+                    <li><strong>{compétence_Développement}</strong> - Compétence spécifique</li>
+                </ul>
+
+                <h5>Compétences fonctionnelles :</h5>
+                <ul>
+                    <li><strong>{compétences_Fonctionnelles_loop_start}</strong> ... <strong>{compétences_Fonctionnelles_loop_end}</strong> - Liste des compétences fonctionnelles</li>
+                    <li><strong>{compétence_Fonctionnelle}</strong> - Compétence spécifique</li>
+                </ul>
+
+                <h5>Expérience professionnelle :</h5>
+                <ul>
+                    <li><strong>{Entreprises_loop_start}</strong> ... <strong>{Entreprises_loop_end}</strong> - Liste des entreprises</li>
+                    <li><strong>{entreprise}</strong> - Nom de l’entreprise</li>
+                    <li><strong>{projets_loop_start}</strong> ... <strong>{projets_loop_end}</strong> - Liste des projets réalisés</li>
+                    <li><strong>{projet,réalisation}</strong> - Nom et réalisation du projet</li>
+                </ul>
+
+                <h5>Soft skills :</h5>
+                <ul>
+                    <li><strong>{compétences_Comportementales_loop_start}</strong> ... <strong>{compétences_Comportementales_loop_end}</strong> - Liste des compétences comportementales</li>
+                    <li><strong>{compétence_Comportementale}</strong> - Compétence spécifique</li>
+                </ul>
+
+                <h5>Outils complémentaires :</h5>
+                <ul>
+                    <li><strong>{Outils_loop_start}</strong> ... <strong>{Outils_loop_end}</strong> - Liste des outils</li>
+                    <li><strong>{Outil}</strong> - Nom de l’outil</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

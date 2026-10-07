@@ -1,0 +1,25 @@
+{% block body %}
+    <div style="min-height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #f4f9fc;">
+        <div style="background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); max-width: 500px; width: 100%;">
+            <h2 style="text-align: center; color: black; font-weight: bold; margin-bottom: 20px;">Soumettre votre CV</h2>
+
+            {{ form_start(form, { 'attr': { 'class': 'needs-validation' } }) }}
+            <div style="margin-bottom: 20px;">
+                {{ form_label(form.cvFile, null, { 'label_attr': { 'style': 'color: #34495e; font-weight: 500; margin-bottom: 5px; display: block;' } }) }}
+                {{ form_widget(form.cvFile, { 'attr': { 'class': 'form-control', 'style': 'padding: 10px; border-radius: 8px; border: 1px solid #dce4ec;' } }) }}
+                {{ form_errors(form.cvFile) }}
+            </div>
+            <input type="hidden" name="_token" value="{{ csrf_token('upload_cv') }}">
+
+
+            <button type="submit"
+                    onclick="this.disabled = true; this.form.submit();",
+                style="background-color: #d4af37; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer;">
+                Soumettre
+            </button>
+            {{ form_end(form) }}
+
+
+        </div>
+    </div>
+{% endblock %}

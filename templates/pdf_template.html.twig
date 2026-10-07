@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Généré - Lovotech</title>
+    <meta name="description" content="CV généré automatiquement par Lovotech">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #d4af37;
+            --text-color: #333;
+            --border-radius: 3px;
+            --spacing-unit: 16px;
+            --content-width: 98%;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: var(--text-color);
+            line-height: 1.5;
+            font-size: 12pt;
+        }
+        .container {
+            width: var(--content-width);
+            max-width: none;
+            margin: 0 auto;
+            padding: 10px 5px;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            position: relative;
+            margin-bottom: calc(var(--spacing-unit)/2);
+            padding-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 18pt;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        h2 {
+            font-size: 16pt;
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        h3 {
+            font-size: 14pt;
+        }
+
+        p {
+            font-size: 11pt;
+            margin-bottom: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 5px;
+            margin-bottom: var(--spacing-unit);
+        }
+
+        li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+            font-size: 11pt;
+        }
+
+        li::before {
+            content: '•';
+            color: var(--accent-color);
+            position: absolute;
+            left: 0;
+            font-size: 12pt;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header-logo {
+            width: 100%;
+            max-width: 500px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+
+
+        .contact-info {
+            text-align: center;
+            font-size: 10pt;
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+
+        @media print {
+            @page {
+
+                size: A4;
+            }
+
+            body {
+                font-size: 10pt;
+                line-height: 1.4;
+            }
+
+            .container {
+                padding: 0;
+                width: 100%;
+            }
+
+            .header-logo {
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <img src="https://lovotech.fr/assets/images/LOGO.png"
+         alt="Logo de Lovotech"
+         class="header-logo"
+         width="auto"
+         height="auto">
+</header>
+
+<main class="container">
+
+    {{ generatedHtml|raw }}
+</main>
+
+</body>
+</html>

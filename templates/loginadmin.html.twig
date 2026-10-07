@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    <title>Connexion Admin</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
+<body>
+<div class="login-container">
+    <h2>Connexion Admin</h2>
+
+    {% for message in app.flashes('error') %}
+        <p class="error">{{ message }}</p>
+    {% endfor %}
+
+    <form method="post">
+        <label>Email :</label>
+        <input type="email" name="email" required>
+
+        <label>Mot de passe :</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Se connecter</button>
+    </form>
+</div>
+</body>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            text-align: left;
+            display: block;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #d4af37;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #d4af37;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #d4af37;
+        }
+
+        .error {
+            color: red;
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 10px;
+        }
+
+    </style>
+{% endblock %}

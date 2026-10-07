@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche Générée - Lovotech</title>
+    <meta name="description" content="CV généré automatiquement par Lovotech">
+<style>
+    :root {
+        --primary-color: #d4af37;
+        --primary-hover: #c59e2e;
+        --text-color: black;
+        --border-light: #f0f0f0;
+        --white: #ffffff;
+    }
+
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background: var(--white);
+    }
+
+    .cv-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .header-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .header-logo img {
+        max-height: 80px;
+    }
+
+    .cv-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .cv-header h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .cv-header h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .skill-list {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .skill-list li {
+        position: relative;
+        padding-left: 15px;
+        margin-bottom: 0.5rem;
+    }
+
+    .skill-list li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: var(--primary-color);
+    }
+
+    .project {
+        margin-bottom: 1.5rem;
+    }
+
+    .project h4 {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .project-info {
+        margin-bottom: 0.5rem;
+    }
+
+    .project-tasks {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .project-tasks li {
+        position: relative;
+        padding-left: 15px;
+        margin-bottom: 0.5rem;
+    }
+
+    .project-tasks li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: var(--primary-color);
+    }
+
+
+    .education-item, .certification-item {
+        margin-bottom: 1rem;
+    }
+
+    .certification-item strong {
+        display: block;
+    }
+
+
+    .cv-footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+        font-size: 0.9rem;
+    }
+</style>
+</head>
+<body>
+<header class="header">
+    <img src="https://lovotech.fr/assets/images/LOGO.png"
+         alt="Logo de Lovotech"
+         class="header-logo"
+         width="auto"
+         height="auto">
+</header>
+
+<main class="container">
+
+    {{ generatedHtml|raw }}
+</main>
+
+</body>
+</html>
